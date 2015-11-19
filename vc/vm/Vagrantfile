@@ -1,16 +1,12 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
-Vagrant.configure("2") do |config|
-
-  config.vm.define :dataops do |dataops_config|
-	dataops_config.vm.box = 'dataops_drupal'
-	dataops_config.vm.box_url = './mysql56_drupal.box'
-	dataops_config.vm.hostname = 'dataops'
-	dataops_config.vm.provider :virtualbox do |vb|
-		vb.customize ["modifyvm", :id, "--memory", "4096"] 
-	end
-        dataops_config.vm.network "forwarded_port", guest: 80, host: 8080
-   end
-
+Vagrant.configure(2) do |config|
+	config.vm.box = "centos-7.0-dbs"
+	config.vm.hostname = "dataops"
+	config.vm.box_url = "file://dataops.box"
+	config.vm.provision "shell", inline: <<-SHELL
+		mysql -u root < /vagrant/data/mysql-users.sql
+		mysql drupal < /vagrant/data/mysql-drupal.sql
+		tar xfz /vagrant/queries.tgz
+		ln -s /vagrant/bin bin && chown vagrant:vagrant bin
+	SHELL
+	config.vm.provision "shell", path: "scripts/vc-local.sh"
 end
