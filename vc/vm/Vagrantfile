@@ -8,5 +8,4 @@ Vagrant.configure(2) do |config|
 		tar xfz /vagrant/queries.tgz
 		ln -s /vagrant/bin bin && chown vagrant:vagrant bin
 	SHELL
-	config.vm.provision "shell", path: "scripts/vc-local.sh"
 end
